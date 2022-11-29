@@ -169,7 +169,7 @@ public class AccountSQLServerDao
                             + "           ,[AMOUNT]\n"
                             + "           ,[DATETIME])\n"
                             + "     VALUES\n"
-                            + "           (?, ?, ?, ?)");) {
+                            + "           (?, ?, ?, GETDATE())");) {
                 con.setAutoCommit(false);
 
                 updateOrigen.setBigDecimal(1, amount);
@@ -183,7 +183,7 @@ public class AccountSQLServerDao
                 insertMov.setInt(1, accIdOrigen);
                 insertMov.setInt(2, accIdDestino);
                 insertMov.setBigDecimal(3, amount);
-                insertMov.setDate(4, new Date(System.currentTimeMillis()));
+
                 insertMov.executeUpdate();
 
                 con.commit();
