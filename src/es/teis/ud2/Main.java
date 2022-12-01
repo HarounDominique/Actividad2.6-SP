@@ -36,7 +36,7 @@ public class Main {
         //     verDetalleDepartamento(666);
         //getDepartmentNamesByLoc("DALLAS");
         //createEmpleado();
-        transferirDinero(1, 2, new BigDecimal(300));
+        transferirDinero(2, 1, new BigDecimal(300));
     }
 
     private static void mostrarDepartamentos() {

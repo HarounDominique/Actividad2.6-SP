@@ -185,13 +185,24 @@ public class AccountSQLServerDao
                 insertMov.setBigDecimal(3, amount);
 
                 insertMov.executeUpdate();
-
+//                if (!exito) {
+//                    throw new SQLException();
+//                }
                 con.commit();
 
             } catch (SQLException ex) {
                 ex.printStackTrace();
                 System.err.println("Ha habido una excepción. Se realizará un rollback: " + ex.getMessage());
-                con.rollback();
+
+                //Para forzar una excepción durante rollback  con.setAutoCommit(true);              con.setAutoCommit(true);
+                try {
+
+                    con.rollback();
+                } catch (SQLException exr) {
+                    ex.printStackTrace();
+                    System.err.println("Ha habido una excepción haciendo rollback: " + exr.getMessage());
+
+                }
             }
 
         } catch (SQLException ex) {
@@ -202,11 +213,89 @@ public class AccountSQLServerDao
             if (con != null) {
                 try {
                     con.setAutoCommit(true);
-                    
+
                     con.close();
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                     System.err.println("Ha habido una excepción cerrando la conexión: " + ex.getMessage());
+                }
+            }
+        }
+        return exito;
+    }
+
+    public boolean transferirTradicional(int accIdOrigen, int accIdDestino, BigDecimal amount) {
+        boolean exito = false;
+        Connection con = null;
+        PreparedStatement updateOrigen = null;
+        PreparedStatement updateDestino = null;
+        PreparedStatement insertMov = null;
+
+        try {
+            con = this.dataSource.getConnection();
+
+            updateOrigen = con.prepareStatement("UPDATE [dbo].[ACCOUNT]\n"
+                    + "   SET [AMOUNT] = (AMOUNT - ?) \n"
+                    + " WHERE ACCOUNTNO = ?");
+            updateDestino = con.prepareStatement("UPDATE [dbo].[ACCOUNT]\n"
+                    + "   SET [AMOUNT] = (AMOUNT + ?) \n"
+                    + " WHERE ACCOUNTNO = ?");
+            insertMov = con.prepareStatement("INSERT INTO [dbo].[ACC_MOVEMENT]\n"
+                    + "           ([ACCOUNT_ORIGIN_ID]\n"
+                    + "           ,[ACCOUNT_DEST_ID]\n"
+                    + "           ,[AMOUNT]\n"
+                    + "           ,[DATETIME])\n"
+                    + "     VALUES\n"
+                    + "           (?, ?, ?, GETDATE())");
+            con.setAutoCommit(false);
+
+            updateOrigen.setBigDecimal(1, amount);
+            updateOrigen.setInt(2, accIdOrigen);
+            updateOrigen.executeUpdate();
+
+            updateDestino.setBigDecimal(1, amount);
+            updateDestino.setInt(2, accIdDestino);
+            updateDestino.executeUpdate();
+
+            insertMov.setInt(1, accIdOrigen);
+            insertMov.setInt(2, accIdDestino);
+            insertMov.setBigDecimal(3, amount);
+
+            insertMov.executeUpdate();
+            con.commit();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.err.println("Ha habido una excepción. Se realizará un rollback: " + ex.getMessage());
+
+            //Para forzar una excepción durante rollback  con.setAutoCommit(true);              con.setAutoCommit(true);
+            try {
+
+                con.rollback();
+            } catch (SQLException exr) {
+                ex.printStackTrace();
+                System.err.println("Ha habido una excepción haciendo rollback: " + exr.getMessage());
+
+            }
+        } finally {
+            if (con != null) {
+                try {
+                    con.setAutoCommit(true);
+                    
+                    if (updateOrigen != null) {
+                        updateOrigen.close();
+                    }
+                    if (updateDestino != null) {
+                        updateDestino.close();
+                    }
+                    if (insertMov != null) {
+                        insertMov.close();
+                    }
+
+                    con.close();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    System.err.println("Ha habido una excepción cerrando los recursos: " + ex.getMessage());
                 }
             }
         }
