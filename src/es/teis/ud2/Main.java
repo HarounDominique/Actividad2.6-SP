@@ -36,7 +36,8 @@ public class Main {
         //     verDetalleDepartamento(666);
         //getDepartmentNamesByLoc("DALLAS");
         //createEmpleado();
-        transferirDinero(2, 1, new BigDecimal(300));
+        //transferirDinero(2, 1, new BigDecimal(300));
+        getEmployeesByDeptId(10);
     }
 
     private static void mostrarDepartamentos() {
@@ -110,5 +111,15 @@ public class Main {
             IAccountDao accountDao = new AccountSQLServerDao();
             accountDao.transferir(accIdOrigen, accIdDestino, cantidad);
         }
+        
+        
+          private static void getEmployeesByDeptId(int deptId){
+              IEmpleadoDao empleadoDao = new EmpleadoSQLServerDao();
+              ArrayList<String> nombres = empleadoDao.getEmpleadosByDeptId(deptId);
+              
+              for (String nombre : nombres) {
+                  System.out.println("Nombre: " + nombre);
+              }
+          }
 
 }
