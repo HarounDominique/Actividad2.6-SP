@@ -10,13 +10,7 @@ import es.teis.ud2.model.Departamento;
 import es.teis.ud2.model.Empleado;
 import es.teis.ud2.model.dao.AbstractGenericDao;
 import java.math.BigDecimal;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import javax.sql.DataSource;
@@ -225,7 +219,23 @@ public class EmpleadoSQLServerDao extends AbstractGenericDao<Empleado>
 
     @Override
     public BigDecimal getMediaSalarialPorDeptId(int deptId) {
-      
+        BigDecimal mediaSalarial = null;
+
+        try (
+                Connection conexion = this.dataSource.getConnection();
+                CallableStatement cstmt = conexion.prepareCall("{call dbo.getMediaSalByDeptId(?,?)}");) {
+
+            cstmt.setInt(1, deptId);
+            cstmt.registerOutParameter(2, Types.DOUBLE);
+            cstmt.execute();
+            mediaSalarial = cstmt.getBigDecimal(2);
+
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            System.err.println("Ha ocurrido una excepción: " + ex.getMessage());
+        }
+        return mediaSalarial;
     }
 
 }

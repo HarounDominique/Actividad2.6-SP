@@ -37,7 +37,10 @@ public class Main {
         //getDepartmentNamesByLoc("DALLAS");
         //createEmpleado();
         //transferirDinero(2, 1, new BigDecimal(300));
-        getEmployeesByDeptId(10);
+        //getEmployeesByDeptId(10);
+        EmpleadoSQLServerDao empleadoSQLServerDao = new EmpleadoSQLServerDao();
+        System.out.println(empleadoSQLServerDao.getMediaSalarialPorDeptId(10));
+
     }
 
     private static void mostrarDepartamentos() {
