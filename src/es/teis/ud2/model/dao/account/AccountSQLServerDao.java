@@ -153,17 +153,19 @@ public class AccountSQLServerDao
     }
 
     @Override
-    public boolean transferir(int accIdOrigen, int accIdDestino, BigDecimal amount) {
-        boolean exito = false;
+    public int transferir(int accIdOrigen, int accIdDestino, BigDecimal amount) {
+        boolean exito = true;
         Connection con = null;
         try {
             con = this.dataSource.getConnection();
 
             try ( PreparedStatement updateOrigen = con.prepareStatement("UPDATE [dbo].[ACCOUNT]\n"
                     + "   SET [AMOUNT] = (AMOUNT - ?) \n"
-                    + " WHERE ACCOUNTNO = ?");  PreparedStatement updateDestino = con.prepareStatement("UPDATE [dbo].[ACCOUNT]\n"
+                    + " WHERE ACCOUNTNO = ?");
+                  PreparedStatement updateDestino = con.prepareStatement("UPDATE [dbo].[ACCOUNT]\n"
                             + "   SET [AMOUNT] = (AMOUNT + ?) \n"
-                            + " WHERE ACCOUNTNO = ?");  PreparedStatement insertMov = con.prepareStatement("INSERT INTO [dbo].[ACC_MOVEMENT]\n"
+                            + " WHERE ACCOUNTNO = ?");
+                  PreparedStatement insertMov = con.prepareStatement("INSERT INTO [dbo].[ACC_MOVEMENT]\n"
                             + "           ([ACCOUNT_ORIGIN_ID]\n"
                             + "           ,[ACCOUNT_DEST_ID]\n"
                             + "           ,[AMOUNT]\n"
@@ -185,12 +187,11 @@ public class AccountSQLServerDao
                 insertMov.setBigDecimal(3, amount);
 
                 insertMov.executeUpdate();
-//                if (!exito) {
-//                    throw new SQLException();
-//                }
+
                 con.commit();
 
             } catch (SQLException ex) {
+                exito=false;
                 ex.printStackTrace();
                 System.err.println("Ha habido una excepción. Se realizará un rollback: " + ex.getMessage());
 
@@ -199,6 +200,7 @@ public class AccountSQLServerDao
 
                     con.rollback();
                 } catch (SQLException exr) {
+                    exito=false;
                     ex.printStackTrace();
                     System.err.println("Ha habido una excepción haciendo rollback: " + exr.getMessage());
 
@@ -206,6 +208,7 @@ public class AccountSQLServerDao
             }
 
         } catch (SQLException ex) {
+            exito=false;
             ex.printStackTrace();
             System.err.println("Ha habido una excepción obteniendo la conexión: " + ex.getMessage());
 
@@ -216,12 +219,17 @@ public class AccountSQLServerDao
 
                     con.close();
                 } catch (SQLException ex) {
+                    exito=false;
                     ex.printStackTrace();
                     System.err.println("Ha habido una excepción cerrando la conexión: " + ex.getMessage());
                 }
             }
         }
-        return exito;
+        if (!exito) {
+            return -1;
+        }else{
+            return +1;
+        }
     }
 
     public boolean transferirTradicional(int accIdOrigen, int accIdDestino, BigDecimal amount) {

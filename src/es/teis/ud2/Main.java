@@ -33,7 +33,7 @@ public class Main {
 
         //mostrarDepartamentos();
         //probar a encontrar un departamento que no existe
-        //     verDetalleDepartamento(666);
+        //verDetalleDepartamento(666);
         //getDepartmentNamesByLoc("DALLAS");
         //createEmpleado();
         //transferirDinero(2, 1, new BigDecimal(300));
