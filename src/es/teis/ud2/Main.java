@@ -38,8 +38,11 @@ public class Main {
         //createEmpleado();
         //transferirDinero(2, 1, new BigDecimal(300));
         //getEmployeesByDeptId(10);
+        /*
         EmpleadoSQLServerDao empleadoSQLServerDao = new EmpleadoSQLServerDao();
         System.out.println(empleadoSQLServerDao.getMediaSalarialPorDeptId(10));
+         */
+        transferirDinero(2, 1, BigDecimal.valueOf(150));
 
     }
 
@@ -52,7 +55,6 @@ public class Main {
 
         for (Departamento departamento : departamentos) {
             System.out.println("Departamento: " + departamento);
-
         }
 
     }
@@ -112,7 +114,7 @@ public class Main {
         (int accIdOrigen, int accIdDestino, BigDecimal cantidad) {
         
             IAccountDao accountDao = new AccountSQLServerDao();
-            accountDao.transferir(accIdOrigen, accIdDestino, cantidad);
+          System.out.println(accountDao.transferir(accIdOrigen, accIdDestino, cantidad));
         }
         
         

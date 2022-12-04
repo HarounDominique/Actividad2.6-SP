@@ -156,6 +156,7 @@ public class AccountSQLServerDao
     public int transferir(int accIdOrigen, int accIdDestino, BigDecimal amount) {
         boolean exito = true;
         Connection con = null;
+        int movId = 0;
         try {
             con = this.dataSource.getConnection();
 
@@ -171,7 +172,7 @@ public class AccountSQLServerDao
                             + "           ,[AMOUNT]\n"
                             + "           ,[DATETIME])\n"
                             + "     VALUES\n"
-                            + "           (?, ?, ?, GETDATE())");) {
+                            + "           (?, ?, ?, GETDATE())", movId=Statement.RETURN_GENERATED_KEYS);) {
                 con.setAutoCommit(false);
 
                 updateOrigen.setBigDecimal(1, amount);
@@ -227,8 +228,8 @@ public class AccountSQLServerDao
         }
         if (!exito) {
             return -1;
-        }else{
-            return +1;
+        }else {
+            return movId;
         }
     }
 

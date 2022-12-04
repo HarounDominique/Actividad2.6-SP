@@ -31,7 +31,8 @@ public class EmpleadoSQLServerDao extends AbstractGenericDao<Empleado>
     @Override
     public Empleado create(Empleado entity) {
         try (
-                 Connection conexion = this.dataSource.getConnection();  PreparedStatement pstmt = conexion.prepareStatement(
+                 Connection conexion = this.dataSource.getConnection();
+                 PreparedStatement pstmt = conexion.prepareStatement(
                 "INSERT INTO [dbo].[EMP]\n"
                 + "           ([ENAME]\n"
                 + "           ,[JOB]\n"
